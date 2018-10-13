@@ -19,6 +19,8 @@ from data.loader import DataLoader
 from model.trainer import GCNTrainer
 from utils import scorer, constant, helper
 from utils.vocab import Vocab
+from tensorboardX import SummaryWriter
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_dir', type=str, default='dataset/tacred')
@@ -108,6 +110,12 @@ file_logger = helper.FileLogger(model_save_dir + '/' + opt['log'], header="# epo
 # print model info
 helper.print_config(opt)
 
+# tensorboardX
+current_time = time.strftime("%Y-%m-%dT%H:%M", time.localtime())
+log_dir = opt['save_dir'] + '/log/' + current_time
+writer = SummaryWriter(log_dir=log_dir)
+
+
 # model
 trainer = GCNTrainer(opt, emb_matrix=emb_matrix)
 
@@ -132,6 +140,7 @@ for epoch in range(1, opt['num_epoch']+1):
             duration = time.time() - start_time
             print(format_str.format(datetime.now(), global_step, max_steps, epoch,\
                     opt['num_epoch'], loss, duration, current_lr))
+            writer.add_scalar('Train/Loss', loss, global_step)
 
     # eval on dev
     print("Evaluating on dev set...")
@@ -150,6 +159,7 @@ for epoch in range(1, opt['num_epoch']+1):
         train_loss, dev_loss, dev_f1))
     dev_score = dev_f1
     file_logger.log("{}\t{:.6f}\t{:.6f}\t{:.4f}\t{:.4f}".format(epoch, train_loss, dev_loss, dev_score, max([dev_score] + dev_score_history)))
+    writer.add_scalar('Validate_F1', dev_score, global_step)
 
     # save
     model_file = model_save_dir + '/checkpoint_epoch_{}.pt'.format(epoch)
