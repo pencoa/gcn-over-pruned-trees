@@ -19,8 +19,6 @@ from data.loader import DataLoader
 from model.trainer import GCNTrainer
 from utils import torch_utils, scorer, constant, helper
 from utils.vocab import Vocab
-from tensorboardX import SummaryWriter
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_dir', type=str, default='dataset/tacred')
@@ -68,7 +66,7 @@ parser.add_argument('--seed', type=int, default=1234)
 parser.add_argument('--cuda', type=bool, default=torch.cuda.is_available())
 parser.add_argument('--cpu', action='store_true', help='Ignore CUDA.')
 
-parser.add_argument('--no-board', dest='no-board', action='store_false', help='Use TensorboardX.') 
+parser.add_argument('--no-board', dest='board', action='store_false', help='Use TensorboardX.') 
 parser.add_argument('--load', dest='load', action='store_true', help='Load pre-trained model.')
 parser.add_argument('--model_dir', type=str, help='Directory of the model.')
 
@@ -116,7 +114,7 @@ file_logger = helper.FileLogger(model_save_dir + '/' + opt['log'], header="# epo
 helper.print_config(opt)
 
 # tensorboardX
-if opt['no-board']:
+if opt['board']:
     from tensorboardX import SummaryWriter
     current_time = time.strftime("%Y-%m-%dT%H:%M", time.localtime())
     log_dir = opt['save_dir'] + '/log/' + current_time
