@@ -17,7 +17,7 @@ from torch.autograd import Variable
 
 from data.loader import DataLoader
 from model.trainer import GCNTrainer
-from utils import scorer, constant, helper
+from utils import torch_utils, scorer, constant, helper
 from utils.vocab import Vocab
 from tensorboardX import SummaryWriter
 
@@ -68,8 +68,8 @@ parser.add_argument('--seed', type=int, default=1234)
 parser.add_argument('--cuda', type=bool, default=torch.cuda.is_available())
 parser.add_argument('--cpu', action='store_true', help='Ignore CUDA.')
 
-parser.add_argument('--board', dest='board', action='store_true', help='Use TensorboardX.') 
-parser.add_argument('--load', dest='load', action='store_false', help='Load pre-trained model.')
+parser.add_argument('--board', dest='board', action='store_false', help='Use TensorboardX.') 
+parser.add_argument('--load', dest='load', action='store_true', help='Load pre-trained model.')
 parser.add_argument('--model_dir', type=str, help='Directory of the model.')
 
 args = parser.parse_args()
