@@ -68,7 +68,9 @@ parser.add_argument('--seed', type=int, default=1234)
 parser.add_argument('--cuda', type=bool, default=torch.cuda.is_available())
 parser.add_argument('--cpu', action='store_true', help='Ignore CUDA.')
 
-parser.add_argument('--board', action='store_true', help='Using TensorboardX.') 
+parser.add_argument('--board', dest='board', action='store_true', help='Use TensorboardX.') 
+parser.add_argument('--load', dest='load', action='store_false', help='Load pre-trained model.')
+parser.add_argument('--model_dir', type=str, help='Directory of the model.')
 
 args = parser.parse_args()
 
@@ -122,7 +124,15 @@ if opt['board']:
 
 
 # model
-trainer = GCNTrainer(opt, emb_matrix=emb_matrix)
+if not opt['load']:
+    trainer = GCNTrainer(opt, emb_matrix=emb_matrix)
+else:
+    # load pre-train model
+    model_file = opt['model_dir'] 
+    print("Loading model from {}".format(model_file))
+    model_opt = torch_utils.load_config(model_file)
+    trainer = GCNTrainer(model_opt)
+    trainer.load(model_file)   
 
 id2label = dict([(v,k) for k,v in label2id.items()])
 dev_score_history = []
