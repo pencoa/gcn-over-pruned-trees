@@ -53,7 +53,7 @@ parser.add_argument('--rnn_dropout', type=float, default=0.5, help='RNN dropout 
 parser.add_argument('--lr', type=float, default=1.0, help='Applies to sgd and adagrad.')
 parser.add_argument('--lr_decay', type=float, default=0.9, help='Learning rate decay rate.')
 parser.add_argument('--decay_epoch', type=int, default=5, help='Decay learning rate after this epoch.')
-parser.add_argument('--optim', choices=['sgd', 'adagrad', 'adam', 'adamax'], default='adam', help='Optimizer: sgd, adagrad, adam or adamax.')
+parser.add_argument('--optim', choices=['sgd', 'adagrad', 'adam', 'adamax'], default='sdg', help='Optimizer: sgd, adagrad, adam or adamax.')
 parser.add_argument('--num_epoch', type=int, default=100, help='Number of total training epochs.')
 parser.add_argument('--batch_size', type=int, default=50, help='Training batch size.')
 parser.add_argument('--max_grad_norm', type=float, default=5.0, help='Gradient clipping.')
@@ -68,7 +68,7 @@ parser.add_argument('--seed', type=int, default=1234)
 parser.add_argument('--cuda', type=bool, default=torch.cuda.is_available())
 parser.add_argument('--cpu', action='store_true', help='Ignore CUDA.')
 
-parser.add_argument('--board', dest='board', action='store_false', help='Use TensorboardX.') 
+parser.add_argument('--no-board', dest='no-board', action='store_false', help='Use TensorboardX.') 
 parser.add_argument('--load', dest='load', action='store_true', help='Load pre-trained model.')
 parser.add_argument('--model_dir', type=str, help='Directory of the model.')
 
@@ -116,7 +116,7 @@ file_logger = helper.FileLogger(model_save_dir + '/' + opt['log'], header="# epo
 helper.print_config(opt)
 
 # tensorboardX
-if opt['board']:
+if opt['no-board']:
     from tensorboardX import SummaryWriter
     current_time = time.strftime("%Y-%m-%dT%H:%M", time.localtime())
     log_dir = opt['save_dir'] + '/log/' + current_time
