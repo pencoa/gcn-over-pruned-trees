@@ -53,7 +53,7 @@ parser.add_argument('--rnn_dropout', type=float, default=0.5, help='RNN dropout 
 parser.add_argument('--lr', type=float, default=1.0, help='Applies to sgd and adagrad.')
 parser.add_argument('--lr_decay', type=float, default=0.9, help='Learning rate decay rate.')
 parser.add_argument('--decay_epoch', type=int, default=5, help='Decay learning rate after this epoch.')
-parser.add_argument('--optim', choices=['sgd', 'adagrad', 'adam', 'adamax'], default='sgd', help='Optimizer: sgd, adagrad, adam or adamax.')
+parser.add_argument('--optim', choices=['sgd', 'adagrad', 'adam', 'adamax'], default='adam', help='Optimizer: sgd, adagrad, adam or adamax.')
 parser.add_argument('--num_epoch', type=int, default=100, help='Number of total training epochs.')
 parser.add_argument('--batch_size', type=int, default=50, help='Training batch size.')
 parser.add_argument('--max_grad_norm', type=float, default=5.0, help='Gradient clipping.')
@@ -67,6 +67,9 @@ parser.add_argument('--info', type=str, default='', help='Optional info for the 
 parser.add_argument('--seed', type=int, default=1234)
 parser.add_argument('--cuda', type=bool, default=torch.cuda.is_available())
 parser.add_argument('--cpu', action='store_true', help='Ignore CUDA.')
+
+parser.add_argument('--board', action='store_true', help='Using TensorboardX.') 
+
 args = parser.parse_args()
 
 torch.manual_seed(args.seed)
@@ -111,9 +114,11 @@ file_logger = helper.FileLogger(model_save_dir + '/' + opt['log'], header="# epo
 helper.print_config(opt)
 
 # tensorboardX
-current_time = time.strftime("%Y-%m-%dT%H:%M", time.localtime())
-log_dir = opt['save_dir'] + '/log/' + current_time
-writer = SummaryWriter(log_dir=log_dir)
+if opt['board']:
+    from tensorboardX import SummaryWriter
+    current_time = time.strftime("%Y-%m-%dT%H:%M", time.localtime())
+    log_dir = opt['save_dir'] + '/log/' + current_time
+    writer = SummaryWriter(log_dir=log_dir)
 
 
 # model
@@ -140,7 +145,8 @@ for epoch in range(1, opt['num_epoch']+1):
             duration = time.time() - start_time
             print(format_str.format(datetime.now(), global_step, max_steps, epoch,\
                     opt['num_epoch'], loss, duration, current_lr))
-            writer.add_scalar('Train/Loss', loss, global_step)
+            if opt['board']:
+                writer.add_scalar('Train/Loss', loss, global_step)
 
     # eval on dev
     print("Evaluating on dev set...")
@@ -159,7 +165,6 @@ for epoch in range(1, opt['num_epoch']+1):
         train_loss, dev_loss, dev_f1))
     dev_score = dev_f1
     file_logger.log("{}\t{:.6f}\t{:.6f}\t{:.4f}\t{:.4f}".format(epoch, train_loss, dev_loss, dev_score, max([dev_score] + dev_score_history)))
-    writer.add_scalar('Validate_F1', dev_score, global_step)
 
     # save
     model_file = model_save_dir + '/checkpoint_epoch_{}.pt'.format(epoch)
