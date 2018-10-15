@@ -72,7 +72,7 @@ Open browser on setting port.
 
 Reload a pre-train model and continue to fine tune, run:
 ```
-python train.py --load --model_dir saved_models/01/best_model.pt --lr 0.001
+python train.py --load --model_dir saved_models/01/best_model.pt --optim sgd --lr 0.001
 ```
 
 ## Related Repo
