@@ -66,7 +66,6 @@ parser.add_argument('--seed', type=int, default=1234)
 parser.add_argument('--cuda', type=bool, default=torch.cuda.is_available())
 parser.add_argument('--cpu', action='store_true', help='Ignore CUDA.')
 
-parser.add_argument('--no-board', dest='board', action='store_false', help='Use TensorboardX.') 
 parser.add_argument('--load', dest='load', action='store_true', help='Load pre-trained model.')
 parser.add_argument('--model_dir', type=str, help='Directory of the model.')
 
@@ -113,14 +112,6 @@ file_logger = helper.FileLogger(model_save_dir + '/' + opt['log'], header="# epo
 # print model info
 helper.print_config(opt)
 
-# tensorboardX
-if opt['board']:
-    from tensorboardX import SummaryWriter
-    current_time = time.strftime("%Y-%m-%dT%H:%M", time.localtime())
-    log_dir = opt['save_dir'] + '/log/' + current_time
-    writer = SummaryWriter(log_dir=log_dir)
-
-
 # model
 if not opt['load']:
     trainer = GCNTrainer(opt, emb_matrix=emb_matrix)
@@ -154,8 +145,6 @@ for epoch in range(1, opt['num_epoch']+1):
             duration = time.time() - start_time
             print(format_str.format(datetime.now(), global_step, max_steps, epoch,\
                     opt['num_epoch'], loss, duration, current_lr))
-            if opt['board']:
-                writer.add_scalar('Train/Loss', loss, global_step)
 
     # eval on dev
     print("Evaluating on dev set...")

@@ -15,7 +15,6 @@ See below for an overview of the model architecture:
 - PyTorch (tested on 0.4.0)
 - tqdm
 - unzip, wget (for downloading only)
-- TensorboardX (for data visualization)
 
 ## Preparation
 
@@ -59,14 +58,6 @@ python eval.py saved_models/00 --dataset test
 ```
 
 This will use the `best_model.pt` file by default. Use `--model checkpoint_epoch_10.pt` to specify a model checkpoint file.
-
-## TensorboardX
-
-To run TensorboardX, run:
-```
-tensorboard --logdir ./saved_models/log --port=6009
-```
-Open browser on setting port.
 
 ## Retrain
 
